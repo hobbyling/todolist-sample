@@ -1,6 +1,6 @@
 const http = require('http')
 const { v4: uuidv4 } = require('uuid');
-const errorHandle = require('./errorHandle')
+const errorHandle = require('./resHandle')
 // 暫存在 node.js 記憶體
 const todos = []
 
@@ -14,10 +14,10 @@ const requestListener = (req, res) => {
 
   /* 接收資料封包並組裝 */
   let body = ""
-  req.on('data', chunk => { 
+  req.on('data', chunk => {
     body += chunk
   })
-  
+
 
   if (req.url == '/todos' && req.method == 'GET') {
     res.writeHead(200, headers)
@@ -27,7 +27,7 @@ const requestListener = (req, res) => {
     }))
     res.end()
   } else if (req.url === '/todos' && req.method === 'POST') {
-    req.on('end',()=> {
+    req.on('end', () => {
       try {
         const title = JSON.parse(body).title
 
@@ -36,7 +36,7 @@ const requestListener = (req, res) => {
             "title": title,
             "id": uuidv4()
           }
-  
+
           todos.push(todo)
           res.writeHead(200, headers)
           res.write(JSON.stringify({
@@ -47,11 +47,11 @@ const requestListener = (req, res) => {
         } else {
           errorHandle(res)
         }
-      } catch(error) {
+      } catch (error) {
         errorHandle(res)
       }
     })
-    
+
   } else if (req.url === '/todos' && req.method === 'DELETE') {
     todos.length = 0
     res.writeHead(200, headers)
@@ -60,7 +60,7 @@ const requestListener = (req, res) => {
       "data": todos,
     }))
     res.end()
-    
+
   } else if (req.url.startsWith('/todos/') && req.method === 'DELETE') {
     const id = req.url.split('/').pop()
     const index = todos.findIndex(el => el.id === id)
@@ -77,11 +77,11 @@ const requestListener = (req, res) => {
       errorHandle(res)
     }
   } else if (req.url.startsWith('/todos/') && req.method === 'PATCH') {
-    req.on('end',()=> {
+    req.on('end', () => {
       try {
         const title = JSON.parse(body).title
         const id = req.url.split('/').pop()
-        const index = todos.findIndex(el => el.id ===id)
+        const index = todos.findIndex(el => el.id === id)
         if (title !== undefined && index !== -1) {
           todos[index].title = title
           res.writeHead(200, headers)
@@ -93,11 +93,11 @@ const requestListener = (req, res) => {
         } else {
           errorHandle(res)
         }
-      } catch(error) {
+      } catch (error) {
         errorHandle(res)
       }
     })
-  }else if (req.method == 'OPTIONS') {
+  } else if (req.method == 'OPTIONS') {
     // preflight 設定
     res.writeHead(200, headers)
     res.end()
@@ -113,4 +113,4 @@ const requestListener = (req, res) => {
 
 const server = http.createServer(requestListener)
 
-server.listen(3005)
+server.listen(process.env.PORT || 3005)
