@@ -13,7 +13,7 @@ const requestListener = (req, res) => {
 
 
   if (req.url == '/todos' && req.method == 'GET') {
-    resHandle.successHandle(res)
+    resHandle.successHandle(res, todos)
   } else if (req.url === '/todos' && req.method === 'POST') {
     req.on('end', () => {
       try {
@@ -26,7 +26,7 @@ const requestListener = (req, res) => {
           }
 
           todos.push(todo)
-          resHandle.successHandle(res)
+          resHandle.successHandle(res, todos)
         } else {
           resHandle.errorHandle(res)
         }
@@ -37,7 +37,7 @@ const requestListener = (req, res) => {
 
   } else if (req.url === '/todos' && req.method === 'DELETE') {
     todos.length = 0
-    resHandle.successHandle(res)
+    resHandle.successHandle(res, todos)
 
   } else if (req.url.startsWith('/todos/') && req.method === 'DELETE') {
     const id = req.url.split('/').pop()
@@ -45,7 +45,7 @@ const requestListener = (req, res) => {
 
     if (index !== -1) {
       todos.splice(index, 1)
-      resHandle.successHandle(res)
+      resHandle.successHandle(res, todos)
     } else {
       resHandle.errorHandle(res)
     }
@@ -57,7 +57,7 @@ const requestListener = (req, res) => {
         const index = todos.findIndex(el => el.id === id)
         if (title !== undefined && index !== -1) {
           todos[index].title = title
-          resHandle.successHandle(res)
+          resHandle.successHandle(res, todos)
         } else {
           resHandle.errorHandle(res)
         }

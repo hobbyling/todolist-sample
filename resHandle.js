@@ -16,11 +16,11 @@ exports.errorHandle = function (res) {
 }
 
 // 成功
-exports.successHandle = function (res) {
+exports.successHandle = function (res, data) {
   res.writeHead(200, headers)
   res.write(JSON.stringify({
     "status": "success",
-    "data": todos
+    "data": data
   }))
   res.end()
 }
